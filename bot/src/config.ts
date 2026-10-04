@@ -30,6 +30,8 @@ export const config = {
   historyMessages: num("HISTORY_MESSAGES", 10),
   dailyLimit: num("DAILY_LIMIT", 20),
   adminIds: new Set((env.ADMIN_IDS ?? "").split(",").map((s) => s.trim()).filter(Boolean)),
+  /** Private bot: only these Telegram user ids are served. Empty = open to everyone. */
+  allowedUsers: new Set((env.ALLOWED_USERS ?? "").split(",").map((s) => s.trim()).filter(Boolean)),
   simTimeoutMs: num("SIM_TIMEOUT_MS", 45_000),
   /** If the signal animation is not rendered in time, the bot sends the static PNG only. */
   animationTimeoutMs: num("ANIMATION_TIMEOUT_MS", 20_000),

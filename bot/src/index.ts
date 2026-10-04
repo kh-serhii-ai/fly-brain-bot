@@ -23,6 +23,16 @@ const sessions = new Sessions(config.historyMessages, config.dailyLimit, config.
 const TG_LIMIT = 4000;
 const SLOW_TOOLS = new Set(["simulate", "render_activity", "compare"]);
 
+// Private bot: it runs on the owner's API keys, so strangers get a short refusal and nothing else
+// (no simulation, no LLM call). Registered first, before every other handler.
+bot.use(async (ctx, next) => {
+  const id = String(ctx.from?.id ?? "");
+  if (config.allowedUsers.size === 0 || config.allowedUsers.has(id)) return next();
+  log("blocked", { user_id: id, update: ctx.updateType });
+  if (ctx.callbackQuery) await ctx.answerCbQuery("Це приватний бот 🔒").catch(() => {});
+  else if (ctx.message) await ctx.reply("Це приватний бот 🔒", Markup.removeKeyboard()).catch(() => {});
+});
+
 const menuKeyboard = Markup.keyboard([[MENU.quiz], [MENU.break, MENU.experiments], [MENU.about]])
   .resize()
   .persistent()
@@ -282,7 +292,8 @@ try {
   log("startup_error", { provider: provider.name, model: provider.model, error: describe(err) });
   throw new Error(`Cannot use ${provider.name} model "${provider.model}" — check the API key and LLM_MODEL.`);
 }
-log("bot_started", { provider: provider.name, model: provider.model, sim: config.simServiceUrl });
+if (config.allowedUsers.size === 0) log("warning", { message: "ALLOWED_USERS is empty: the bot is open to everyone" });
+log("bot_started", { provider: provider.name, model: provider.model, sim: config.simServiceUrl, private: config.allowedUsers.size > 0 });
 void bot.launch();
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));

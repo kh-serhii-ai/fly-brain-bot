@@ -170,7 +170,8 @@ The bot says this in "Про бота" and in every simulation answer.
 ## Run it
 
 ```bash
-cp .env.example .env            # TELEGRAM_BOT_TOKEN + OPENAI_API_KEY (or LLM_PROVIDER=anthropic + ANTHROPIC_API_KEY)
+cp .env.example .env            # TELEGRAM_BOT_TOKEN + OPENAI_API_KEY (or LLM_PROVIDER=anthropic + ANTHROPIC_API_KEY);
+                                # ALLOWED_USERS=<your Telegram id> keeps the bot private (it runs on your API keys)
 docker compose up -d --build    # first start downloads ~135 MB of FlyWire data
 docker compose logs -f bot
 ```
