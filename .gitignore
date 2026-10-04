@@ -1,0 +1,14 @@
+# FlyWire data (CC BY-NC 4.0) is downloaded by scripts/build_data.py, never committed
+sim-service/data/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+node_modules/
+dist/
+.env
+logs/*
+!logs/.gitkeep
+*.log
+bot/out/

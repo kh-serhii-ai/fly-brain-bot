@@ -1,0 +1,43 @@
+# "Break the fly" scenarios: the same stimulus to a normal brain and to a changed one.
+# Each scenario is shown in the bot only because tests/test_compare.py confirms `expect`
+# (stable over seeds 0-4, 10 trials x 1 s, FlyWire v783):
+#   add_bitter:   MN9 87-90 Hz -> 0.2-0.5 Hz
+#   cut_feeding:  MN9 87-90 Hz -> 0.7-1.1 Hz   (silencing 2 of 138,639 neurons)
+#   cut_escape:   Giant Fiber 69-70 Hz -> 15 Hz
+# How the cut neurons were found: stimulate the input, silence each responding cell type
+# one at a time (as in Shiu et al. 2024, Fig. 1F), keep the type with the largest effect.
+# CB0553 is also the last relay of the strongest sugar -> MN9 path (LB3c -> CB0616 -> CB0553 -> MN9).
+# LC4 reaches the Giant Fiber both directly (805 synapses over 104 cells) and via 4 PVLP122b
+# neurons (LC4 -> PVLP122b 832 synapses, PVLP122b -> DNp01 281); without the relay the direct
+# input is not enough. LPLC2 has no such scenario: it drives DNp01 directly (1080 synapses),
+# and no single relay type drops the response below the threshold.
+
+add_bitter:
+  title: "Додати гірке до солодкого"
+  button: "🧪 Додати гірке"
+  baseline_label: "Звичайна муха: цукор"
+  variant_label: "Цукор + гірке"
+  baseline: {stimulate: [sugar_grn], silence: [], rate_hz: 150}
+  variant: {stimulate: [sugar_grn, bitter_grn], silence: [], rate_hz: 150}
+  expect: {behavior: feeding, baseline: true, variant: false}
+  story: "Ті самі цукрові рецептори, але разом із гіркими. Гіркі смакові нейрони через гальмівні ланцюги глушать команду «їсти». Живі мухи поводяться так само: гірка домішка відбиває охоту витягувати хоботок до цукру."
+
+cut_feeding:
+  title: "Перерізати шлях до хоботка"
+  button: "✂️ Перерізати шлях до хоботка"
+  baseline_label: "Звичайна муха"
+  variant_label: "Муха без 2 нейронів CB0553"
+  baseline: {stimulate: [sugar_grn], silence: [], rate_hz: 150}
+  variant: {stimulate: [sugar_grn], silence: [CB0553], rate_hz: 150}
+  expect: {behavior: feeding, baseline: true, variant: false}
+  story: "Найсильніший шлях від цукрових рецепторів до хоботка: LB3c → CB0616 → CB0553 → MN9. CB0553 — це лише 2 нейрони з 138 639 (по одному з кожного боку), але вони — останній «місток» до мотонейронів MN9. Модель вимикає їхні синапси."
+
+cut_escape:
+  title: "Вимкнути передавачів загрози"
+  button: "🛡 Вимкнути передавачів загрози"
+  baseline_label: "Звичайна муха"
+  variant_label: "Муха без 4 нейронів PVLP122b"
+  baseline: {stimulate: [lc4], silence: [], rate_hz: 100}
+  variant: {stimulate: [lc4], silence: [PVLP122b], rate_hz: 100}
+  expect: {behavior: escape, baseline: true, variant: false}
+  story: "Детектори наближення LC4 бачать загрозу і передають сигнал на Giant Fiber двома шляхами: напряму й через 4 проміжні нейрони PVLP122b. Модель вимикає ці 4 нейрони — прямого сигналу самого по собі не вистачає для стрибка."

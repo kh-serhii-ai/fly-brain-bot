@@ -1,0 +1,136 @@
+# Ready-made neuron groups. Every group is resolved from FlyWire v783 annotations at startup
+# (no hard-coded ids), so the members are exactly what the annotations say.
+#
+# select: column -> value or list of values, combined with AND.
+#         Columns come from Supplemental_file1_neuron_annotations.tsv (Schlegel et al. 2024,
+#         flyconnectome/flywire_annotations; GRN modalities from Tastekin et al. 2026).
+# role:   input (good to stimulate) | output (behaviour readout) | modulator (good to silence)
+# default_rate_hz: stimulation rate that gives a clear, non-runaway response in the model.
+
+sugar_grn:
+  name: "Цукрові смакові рецептори (GRN)"
+  description: "Смакові рецепторні нейрони хоботка, що реагують на цукор. Саме їх стимулювали Shiu et al. 2024, щоб викликати розгинання хоботка."
+  select: {cell_class: gustatory, cell_sub_class: sugar}
+  role: input
+  default_rate_hz: 150
+  source: "FlyWire annotations (cell_sub_class=sugar, Tastekin et al. 2026); Shiu et al. 2024 Fig. 1"
+
+bitter_grn:
+  name: "Гіркі смакові рецептори (GRN)"
+  description: "Смакові рецептори, що реагують на гіркі (часто отруйні) речовини. Гальмують поїдання."
+  select: {cell_class: gustatory, cell_sub_class: bitter}
+  role: input
+  default_rate_hz: 150
+  source: "FlyWire annotations (cell_sub_class=bitter); Shiu et al. 2024 Fig. 3"
+
+water_grn:
+  name: "Водні смакові рецептори (GRN)"
+  description: "Смакові рецептори, що реагують на воду (низьку осмолярність) — сигнал для пиття."
+  select: {cell_class: gustatory, cell_sub_class: water}
+  role: input
+  default_rate_hz: 150
+  source: "FlyWire annotations (cell_sub_class=water, Tastekin et al. 2026)"
+
+orn_dm1:
+  name: "Нюхові рецептори DM1 (запах оцту/фруктів)"
+  description: "Нюхові рецепторні нейрони гломерули DM1 (рецептор Or42b) — реагують на фруктові запахи, на кшталт оцту; привабливий запах для мухи. Увага: у цій моделі навіть слабка стимуляція DM1 викликає лавину активності в антенальній частці."
+  select: {cell_class: olfactory, cell_type: ORN_DM1}
+  role: input
+  default_rate_hz: 10
+  source: "FlyWire annotations (cell_type=ORN_DM1)"
+
+orn_da2:
+  name: "Нюхові рецептори DA2 (геосмін, запах цвілі)"
+  description: "Нюхові рецептори гломерули DA2 (Or56a), налаштовані на геосмін — запах цвілі та шкідливих мікробів; викликає уникання."
+  select: {cell_class: olfactory, cell_type: ORN_DA2}
+  role: input
+  default_rate_hz: 30
+  source: "FlyWire annotations (cell_type=ORN_DA2)"
+
+orn_all:
+  name: "Усі нюхові рецепторні нейрони (ORN)"
+  description: "Усі нюхові рецептори антен і максилярних щупиків (~2300 нейронів, ~50 гломерул). Зручно для пошуку шляхів; одночасна стимуляція всіх викликає лавину активності."
+  select: {cell_class: olfactory}
+  role: input
+  default_rate_hz: 30
+  source: "FlyWire annotations (cell_class=olfactory)"
+
+lc4:
+  name: "LC4 — детектори наближення (looming)"
+  description: "Візуальні проєкційні нейрони, що реагують на обʼєкт, який швидко наближається (загроза). Передають сигнал на Giant Fiber."
+  select: {cell_type: LC4}
+  role: input
+  default_rate_hz: 100
+  source: "FlyWire annotations (cell_type=LC4); von Reyn et al. 2017"
+
+lplc2:
+  name: "LPLC2 — детектори зіткнення"
+  description: "Візуальні нейрони, що реагують на розширення обʼєкта в полі зору (наближення «прямо на муху»). Головний вхід Giant Fiber."
+  select: {cell_type: LPLC2}
+  role: input
+  default_rate_hz: 100
+  source: "FlyWire annotations (cell_type=LPLC2); Ache et al. 2019"
+
+giant_fiber:
+  name: "Giant Fiber (DNp01)"
+  description: "Пара найбільших низхідних нейронів мухи. Їхній спайк запускає швидкий стрибок-втечу (take-off) за мілісекунди."
+  select: {cell_type: DNp01}
+  role: output
+  default_rate_hz: 100
+  source: "FlyWire annotations (cell_type=DNp01, hemibrain_type=\"Giant Fiber\")"
+
+mn9:
+  name: "MN9 — мотонейрони хоботка"
+  description: "Мотонейрони (тип CB0701), які Shiu et al. 2024 використовували як вихід для розгинання хоботка (proboscis extension) — тобто «муха тягнеться їсти»."
+  select: {cell_type: CB0701}
+  role: output
+  default_rate_hz: 100
+  source: "Shiu et al. 2024 (MN9 = root 720575940660219265, type CB0701 in FlyWire annotations)"
+
+descending:
+  name: "Низхідні нейрони (DN)"
+  description: "Нейрони, що передають команди з мозку в черевний нервовий ланцюжок (аналог спинного мозку) — фактично «вихід» мозку до тіла: ходьба, політ, втеча, груминг."
+  select: {super_class: descending}
+  role: output
+  default_rate_hz: 50
+  source: "FlyWire annotations (super_class=descending)"
+
+motor:
+  name: "Мотонейрони мозку"
+  description: "Мотонейрони, аксони яких виходять прямо з мозку: хоботок, шия, антени, очі, ковтання."
+  select: {super_class: motor}
+  role: output
+  default_rate_hz: 50
+  source: "FlyWire annotations (super_class=motor)"
+
+gaba:
+  name: "GABA-ергічні нейрони"
+  description: "Нейрони з передбаченим нейромедіатором GABA — основні гальмівні нейрони мозку мухи. Їх «вимкнення» показує, що стримує активність."
+  select: {top_nt: gaba}
+  role: modulator
+  default_rate_hz: 50
+  source: "FlyWire annotations (top_nt=gaba, Eckstein et al. 2024 neurotransmitter predictions)"
+
+jo_ce:
+  name: "Механорецептори антени JO-C/E (дотик до вусика)"
+  description: "Нейрони Джонстонового органа в антені, підтипи C та E. Реагують на відхилення антени — наприклад, коли на вусик сіла порошинка. У живих мух їхня активація викликає чищення антен (Hampel et al. 2015); модель Shiu et al. 2024 це відтворює."
+  select: {cell_type: [JO-CA1, JO-CA2, JO-CL, JO-CM, JO-ED1, JO-ED2_a, JO-ED2_b, JO-ED2_c, JO-EV1, JO-EV2, JO-EV3, JO-EV4, JO-EV5, JO-EV6]}
+  role: input
+  default_rate_hz: 220
+  source: "FlyWire annotations (cell_type JO-C*/JO-E*); Shiu et al. 2024 Fig. 5"
+
+jo_f:
+  name: "Механорецептори антени JO-F"
+  description: "Інший підтип нейронів Джонстонового органа. У моделі їхня активація, на відміну від JO-C/E, не вмикає команду чищення антен."
+  select: {cell_type: [JO-FV, JO-FD1, JO-FD2]}
+  role: input
+  default_rate_hz: 220
+  source: "FlyWire annotations (cell_type JO-F*); Shiu et al. 2024 Fig. 5"
+
+grooming_dn:
+  name: "aDN1 — команда чищення антен"
+  description: "Низхідні нейрони aDN1 (тип DNg62 в анотаціях FlyWire). Передають команду передніми лапками почистити антени (Hampel et al. 2015). Shiu et al. 2024 використовували їх як вихід для грумінгу."
+  select: {cell_type: DNg62}
+  role: output
+  default_rate_hz: 100
+  source: "Shiu et al. 2024 (aDN1 root 720575940616185531 = DNg62 in FlyWire v783 annotations)"

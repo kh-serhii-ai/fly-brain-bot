@@ -1,0 +1,31 @@
+services:
+  sim-service:
+    build: ./sim-service
+    restart: unless-stopped
+    environment:
+      SIM_THREADS: ${SIM_THREADS:-4}
+      SIM_MAX_OPS: ${SIM_MAX_OPS:-200000000}
+      SIM_CONCURRENCY: ${SIM_CONCURRENCY:-1}
+    volumes:
+      - fly-data:/app/data          # FlyWire data, downloaded on first start
+    # internal only: the bot reaches it at http://sim-service:8000
+    expose:
+      - "8000"
+
+  bot:
+    build: ./bot
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false   # so `docker compose` works for sim-service alone
+    environment:
+      SIM_SERVICE_URL: http://sim-service:8000
+      LOG_FILE: /app/logs/bot.log
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      sim-service:
+        condition: service_healthy
+
+volumes:
+  fly-data:

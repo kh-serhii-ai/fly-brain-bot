@@ -1,0 +1,40 @@
+# "Guess what the fly does" scenarios. The bot asks first, then runs exactly this simulation and
+# compares the user's guess with the code-computed verdict (behaviors.yaml) — no LLM involved.
+# tests/test_quiz.py checks `expect` on seeds 0-2; a scenario that fails is not shown.
+# Water is deliberately absent: a thirsty fly drinks, but the model has no thirst state and
+# shows "no feeding" for water — a correct model answer that would only confuse players.
+
+swat:
+  button: "🖐 Прихлопнути муху"
+  prompt: "На муху летить згорнута газета. Як думаєш, що зробить її мозок?"
+  simulate: {stimulate: [lplc2], silence: [], rate_hz: 100}
+  expect: {escape: true, feeding: false, grooming: false}
+  explain: "Газета, що летить на муху, — це об'єкт на курсі зіткнення. На такий сигнал реагують зорові детектори LPLC2. Вони з'єднані з Giant Fiber напряму, понад тисячею синапсів, і в моделі вже через ~7 мс він запускає стрибок-втечу. Саме тому прихлопнути муху так важко."
+
+sugar:
+  button: "🍬 Дати цукор"
+  prompt: "На хоботок мухи потрапила крапля солодкого. Що вона зробить?"
+  simulate: {stimulate: [sugar_grn], silence: [], rate_hz: 150}
+  expect: {escape: false, feeding: true, grooming: false}
+  explain: "Цукрові смакові рецептори на хоботку передають сигнал ланцюжком LB3c → CB0616 → CB0553 до мотонейронів MN9. Через ~35–40 мс MN9 спрацьовують, і муха витягує хоботок, щоб їсти. Тікати від цукру нема причин: Giant Fiber мовчить."
+
+sugar_bitter:
+  button: "🧪 Цукор з гірким"
+  prompt: "Солодке, але з гіркою домішкою. Що зробить муха?"
+  simulate: {stimulate: [sugar_grn, bitter_grn], silence: [], rate_hz: 150}
+  expect: {escape: false, feeding: false, grooming: false}
+  explain: "Цукор сам по собі запустив би хоботок, але гіркі рецептори вмикають гальмівні нейрони (наприклад, GABA-ергічні CB0159), і ті глушать команду «їсти»: MN9 майже мовчать. Тікати модель теж не змушує. Отже — нічого: муха не їсть. Живі мухи поводяться так само: гірка домішка відбиває охоту витягувати хоботок."
+
+bitter:
+  button: "🌿 Гірке"
+  prompt: "На хоботок потрапило щось гірке. Що зробить муха?"
+  simulate: {stimulate: [bitter_grn], silence: [], rate_hz: 150}
+  expect: {escape: false, feeding: false, grooming: false}
+  explain: "Гіркі смакові рецептори не ведуть до MN9: хоботок не витягується. І це не загроза для Giant Fiber, тож стрибка теж немає. Модель має три виміряні виходи — «їсти», «тікати» і «чистити вусики», — і жоден не спрацював, тому вона показує «нічого». Справжня муха, найімовірніше, просто відвернулася б, але такого виходу в моделі немає."
+
+dust:
+  button: "🌫 Порошинка на вусику"
+  prompt: "На вусик мусі сіла порошинка і трохи його відхилила. Що вона зробить?"
+  simulate: {stimulate: [jo_ce], silence: [], rate_hz: 220}
+  expect: {escape: false, feeding: false, grooming: true}
+  explain: "Порошинка відхиляє антену, і на це реагують механорецептори Джонстонового органа (підтипи C та E). Їхній сигнал вмикає нейрони aBN1 і низхідну «команду» aDN1, яка змушує передні лапки чистити вусики. У живих мух активація цих нейронів теж викликає чищення антен (Hampel et al. 2015). А інший підтип, JO-F, у моделі чищення не запускає."

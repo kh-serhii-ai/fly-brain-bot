@@ -1,0 +1,30 @@
+{
+  "name": "fly-brain-bot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Telegram bot: an LLM agent that runs a spiking simulation of the fruit fly connectome",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "cli": "tsx src/cli.ts",
+    "build": "tsc -p .",
+    "start": "node dist/index.js",
+    "typecheck": "tsc -p . --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
+    "openai": "^7.27.0",
+    "telegraf": "^4.16.3",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

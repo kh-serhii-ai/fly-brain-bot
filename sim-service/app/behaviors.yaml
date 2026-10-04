@@ -1,0 +1,41 @@
+# Behaviour verdicts are computed by code from validated output neurons, never by the LLM.
+# A behaviour is "active" when the strongest neuron of its output group fires >= threshold_hz
+# (mean over trials). Only outputs validated against Shiu et al. 2024 are listed.
+#
+# Thresholds were picked from validation runs (10 trials x 1 s, seed 0, FlyWire v783):
+#   MN9 (max of the pair):
+#     no:  bitter 0, water 0, sugar@25 Hz 0, sugar+bitter 1.9-6.6 Hz
+#     weak: sugar@50 Hz 20.4, right-side sugar@150 Hz 18.1
+#     yes: sugar@75 Hz 49.1, sugar@100 Hz 74.8, sugar@150 Hz 90-96
+#   Giant Fiber DNp01 (max of the pair):
+#     no:  sugar, bitter, water 0
+#     weak: LC4@25 Hz 18.9
+#     yes: LC4@50 Hz 35.6, LC4@100 Hz 68.9, LPLC2@100 Hz 140-212
+# 30 Hz sits in the gap between weak/no and clear responses for both outputs.
+# Below the threshold but >= 1 Hz the verdict is "no" with a "weak signal" note.
+
+escape:
+  label: "Стрибок-втеча"
+  icon: "🦵"
+  group: giant_fiber
+  neurons: "DNp01 (Giant Fiber)"
+  threshold_hz: 30
+
+feeding:
+  label: "Витягнула хоботок (їсть)"
+  icon: "👅"
+  group: mn9
+  neurons: "MN9"
+  threshold_hz: 30
+
+# Antennal grooming: aDN1 (DNg62), the descending command for antenna cleaning (Hampel et al. 2015),
+# used by Shiu et al. 2024 (Fig. 5) as the grooming readout. Validation runs:
+#   no:  sugar, bitter, water, LPLC2, LC4, sugar+bitter, GABA silenced: 0; JO-F @60-220 Hz: 0
+#   weak: JO-C/E @100 Hz 7.3
+#   yes: JO-C/E @150 Hz 33, @220 Hz 55-57 (seeds 0-4)
+grooming:
+  label: "Чистить вусики лапками"
+  icon: "🧹"
+  group: grooming_dn
+  neurons: "aDN1 (DNg62)"
+  threshold_hz: 30
